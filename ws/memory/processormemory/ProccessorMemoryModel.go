@@ -1,7 +1,7 @@
 package processormemory
 
 type ProcessorMemory struct {
-	data []byte
+	data map[int]byte
 }
 
 type ProcessorMemoryRequest struct {
