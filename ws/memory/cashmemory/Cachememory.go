@@ -38,5 +38,4 @@ func Write() gin.HandlerFunc {
 
 		c.String(http.StatusCreated, "Value %d written at address %bcd", cmr.value, cmr.address)
 	}
-
 }
