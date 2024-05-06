@@ -11,6 +11,7 @@ import (
 func init() {
 	initializers.LoadEnvVariables()
 }
+
 func main() {
 	port := os.Getenv("PORT")
 
