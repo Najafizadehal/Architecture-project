@@ -1,4 +1,4 @@
-package ws
+package memory
 
 type Cache struct {
 	CacheLines []CacheLine
