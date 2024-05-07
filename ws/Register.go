@@ -1,6 +1,6 @@
 package ws
 
-type Register struct {
+type Registers struct {
 	PC     int
 	ACC    byte
 	IR     byte
@@ -9,11 +9,11 @@ type Register struct {
 	Status byte
 }
 
-func NewRegister() *Register {
-	return &Register{}
+func NewRegister() *Registers {
+	return &Registers{}
 }
 
-func (r *Register) Read(reg int) byte {
+func (r *Registers) Read(reg int) byte {
 	switch reg {
 	case 0:
 		return byte(r.PC)

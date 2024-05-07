@@ -20,8 +20,8 @@ func NewCache(size, lineSize int) *Cache {
 }
 
 func (c *Cache) Read(address int) byte {
-	lineIndex := address / c.LineSize
-	offset := address / c.LineSize
+	// lineIndex := address / c.LineSize
+	offset := address & c.LineSize
 
 	for _, line := range c.CacheLines {
 		if line.Tag == address/c.LineSize {
@@ -30,4 +30,23 @@ func (c *Cache) Read(address int) byte {
 	}
 
 	return 0
+}
+
+func (c *Cache) Write(address int, data byte) {
+	lineIndex := address / c.LineSize
+	offset := address % c.LineSize
+
+	for i, line := range c.CacheLines {
+		if line.Tag == address/c.LineSize {
+			c.CacheLines[i].Data[offset] = data
+			return
+		}
+	}
+	// در صورت عدم یافتن در کش، افزودن خط جدید به کش
+	c.CacheLines[lineIndex] = CacheLine{
+		Tag:  address / c.LineSize,
+		Data: make([]byte, c.LineSize),
+	}
+
+	c.CacheLines[lineIndex].Data[offset] = data
 }
