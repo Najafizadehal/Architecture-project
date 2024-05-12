@@ -1,4 +1,4 @@
-package ws
+package bus
 
 type ControlBus struct {
 	ControlSignals []byte

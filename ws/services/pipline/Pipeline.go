@@ -1,6 +1,6 @@
 package pipline
 
-import "architecture/ws/controlunit"
+import "architecture/ws/services/controlunit"
 
 type Pipeline struct {
 	ControlUnit *controlunit.ControlUnit

@@ -1,4 +1,4 @@
-package ws
+package memory
 
 type Memory struct {
 	data []byte

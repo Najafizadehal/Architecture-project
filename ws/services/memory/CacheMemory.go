@@ -28,7 +28,6 @@ func (c *Cache) Read(address int) byte {
 			return line.Data[offset]
 		}
 	}
-
 	return 0
 }
 

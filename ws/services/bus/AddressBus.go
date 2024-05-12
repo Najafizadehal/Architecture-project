@@ -1,4 +1,4 @@
-package ws
+package bus
 
 type AddressBus struct {
 	Address []int
@@ -10,7 +10,7 @@ func NewAddressBus(size int) *AddressBus {
 	}
 }
 
-func (b *AddressBus) Rea() int {
+func (b *AddressBus) Read() int {
 	return b.Address[0]
 }
 

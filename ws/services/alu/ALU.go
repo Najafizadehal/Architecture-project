@@ -1,8 +1,8 @@
 package alu
 
 import (
-	"architecture/ws/bus"
-	"architecture/ws/memory"
+	"architecture/ws/services/bus"
+	"architecture/ws/services/memory"
 )
 
 type ALU struct {

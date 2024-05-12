@@ -1,8 +1,8 @@
 package controlunit
 
 import (
-	"architecture/ws/bus"
-	ws "architecture/ws/memory"
+	"architecture/ws/services/bus"
+	ws "architecture/ws/services/memory"
 )
 
 type ControlUnit struct {
