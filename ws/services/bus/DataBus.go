@@ -1,12 +1,16 @@
 package bus
 
 type DataBus struct {
-	Data []byte
+	Data map[int]byte
 }
 
 func NewDataBus(size int) *DataBus {
+	data := make(map[int]byte, size)
+	for i := 0; i < size; i++ {
+		data[i] = 0
+	}
 	return &DataBus{
-		Data: make([]byte, size),
+		Data: data,
 	}
 }
 

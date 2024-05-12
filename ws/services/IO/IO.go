@@ -40,9 +40,4 @@ func WriteValueOnBus(value []byte) {
 	for _, i := range value {
 		data.Write(i)
 	}
-	StoreInMemory()
-}
-
-func StoreInMemory(data []byte) {
-
 }
