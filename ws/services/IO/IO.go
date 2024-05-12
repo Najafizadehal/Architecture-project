@@ -8,7 +8,7 @@ import (
 )
 
 func BulkWriteInMemoryRoutes(incommingRoutes *gin.Engine) {
-	incommingRoutes.POST("/memory/write", Write())
+	// incommingRoutes.POST("/memory/write", Write())
 }
 
 type BulkWriteMemoryRequest struct {
@@ -16,18 +16,33 @@ type BulkWriteMemoryRequest struct {
 	value   string
 }
 
-func Write() gin.HandlerFunc {
+func WriteOnBus() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request BulkWriteMemoryRequest
-
 		if err := c.BindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
 		byteAddress := []byte(request.address)
-		address := bus.NewAddressBus(len(byteAddress))
-
-		for _, b := range byteAddress {
-			address.Write(int(b))
-		}
+		WriteOnAddress(byteAddress)
+		byteData := []byte(request.value)
+		WriteValueOnBus(byteData)
 	}
+}
+func WriteOnAddress(byteAddress []byte) {
+	address := bus.NewAddressBus(len(byteAddress))
+	for _, b := range byteAddress {
+		address.Write(int(b))
+	}
+}
+
+func WriteValueOnBus(value []byte) {
+	data := bus.NewDataBus(len(value))
+	for _, i := range value {
+		data.Write(i)
+	}
+	StoreInMemory()
+}
+
+func StoreInMemory(data []byte) {
+
 }
