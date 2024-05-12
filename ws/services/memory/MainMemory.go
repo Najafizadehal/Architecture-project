@@ -12,7 +12,7 @@ func NewMemory(size int) *Memory {
 	}
 }
 
-func (m *Memory) Store(address []byte, data []byte) byte {
+func (m *Memory) Store(address []byte, data []byte) {
 	addressKey := string(address)
 	m.Storage[addressKey] = data
 }
