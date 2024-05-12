@@ -2,6 +2,7 @@ package main
 
 import (
 	"architecture/initializers"
+	io "architecture/ws/services/IO"
 	"log"
 	"os"
 
@@ -22,9 +23,9 @@ func main() {
 	// r := gin.Default()
 	router := gin.New()
 	router.Use(gin.Logger())
-
+	io.BulkWriteInMemoryRoutes(router)
 	if err := router.Run(":" + port); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
-		
+
 }
