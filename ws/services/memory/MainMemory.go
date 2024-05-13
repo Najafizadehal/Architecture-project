@@ -6,9 +6,9 @@ type Memory struct {
 	Storage map[string][]byte
 }
 
-func NewMemory(size int) *Memory {
+func NewMemory() *Memory {
 	return &Memory{
-		Storage: make(map[string][]byte),
+		Storage: make(map[string][]byte, 4096),
 	}
 }
 
