@@ -19,6 +19,9 @@ type BulkWriteMemoryRequest struct {
 	Value   string `json:"value"`
 }
 
+// var dataBus *bus.DataBus
+var globalDataBus *bus.DataBus
+
 func getRequestForWriteOnMemory() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var request BulkWriteMemoryRequest
@@ -36,14 +39,24 @@ func getRequestForWriteOnMemory() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid value"})
 			return
 		}
-		WriteOnAddress(byteAddress, byteData)
+
+		if globalDataBus == nil {
+			globalDataBus = bus.NewDataBus()
+		}
+		// ذخیره داده در DataBus
+		globalDataBus.Write(byteAddress, byteData)
+
+		// WriteOnAddress(byteAddress, byteData)
+		// WriteOnAddress(byteAddress, byteData)
 		c.JSON(http.StatusOK, gin.H{"message": "Data written successfully"})
 	}
 }
 
-func WriteOnAddress(byteAddress int, data []byte) {
+func WriteOnAddress(byteAddress int, data []byte) *bus.DataBus {
 	dataBus := bus.NewDataBus()
 	dataBus.Write(byteAddress, data)
+
+	return dataBus
 }
 
 func ReadFromBus() gin.HandlerFunc {
@@ -56,7 +69,7 @@ func ReadFromBus() gin.HandlerFunc {
 			return
 		}
 
-		data := bus.NewDataBus().Read(addr)
+		data := globalDataBus.Read(addr)
 
 		c.JSON(http.StatusOK, gin.H{"data": data})
 	}
