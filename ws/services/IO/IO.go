@@ -2,7 +2,9 @@ package io
 
 import (
 	"architecture/ws/services/bus"
+	"architecture/ws/services/memory"
 	"encoding/hex"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -11,7 +13,7 @@ import (
 
 func BulkWriteInMemoryRoutes(incommingRoutes *gin.Engine) {
 	incommingRoutes.POST("/memory/write", getRequestForWriteOnMemory())
-	incommingRoutes.GET("/memory/:address", ReadFromBus())
+	incommingRoutes.GET("/memory/:address", ReadFromMemory())
 }
 
 type BulkWriteMemoryRequest struct {
@@ -21,6 +23,7 @@ type BulkWriteMemoryRequest struct {
 
 // var dataBus *bus.DataBus
 var globalDataBus *bus.DataBus
+var globalMemory *memory.Memory
 
 func getRequestForWriteOnMemory() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -43,23 +46,19 @@ func getRequestForWriteOnMemory() gin.HandlerFunc {
 		if globalDataBus == nil {
 			globalDataBus = bus.NewDataBus()
 		}
-		// ذخیره داده در DataBus
+		if globalMemory == nil {
+			globalMemory = memory.NewMemory()
+		}
 		globalDataBus.Write(byteAddress, byteData)
-
-		// WriteOnAddress(byteAddress, byteData)
-		// WriteOnAddress(byteAddress, byteData)
+		data := ReadFromBus(byteAddress)
+		log.Print("data", data)
+		globalMemory.Store(byteAddress, data)
+		globalDataBus.Delete(byteAddress)
 		c.JSON(http.StatusCreated, gin.H{"message": "Data written successfully"})
 	}
 }
 
-func WriteOnAddress(byteAddress int, data []byte) *bus.DataBus {
-	dataBus := bus.NewDataBus()
-	dataBus.Write(byteAddress, data)
-
-	return dataBus
-}
-
-func ReadFromBus() gin.HandlerFunc {
+func ReadFromMemory() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		address := c.Param("address")
 
@@ -69,14 +68,17 @@ func ReadFromBus() gin.HandlerFunc {
 			return
 		}
 
-		data := globalDataBus.Read(addr)
+		data := globalMemory.Load(addr)
 		str := string(data)
 		hexString := hex.EncodeToString([]byte(str))
+
 		c.JSON(http.StatusOK, gin.H{"data": hexString})
 	}
 }
 
-// bus := bus.NewDataBus()
-// 		retrievedData := bus.Read(byteAddress)
-// 		memory := memory.NewMemory()
-// 		memory.Store(byteAddress, retrievedData)
+func ReadFromBus(address int) []byte {
+
+	data := globalDataBus.Read(address)
+
+	return data
+}

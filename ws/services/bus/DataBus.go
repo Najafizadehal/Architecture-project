@@ -17,3 +17,7 @@ func (d *DataBus) Read(address int) []byte {
 func (d *DataBus) Write(address int, data []byte) {
 	d.Data[address] = data
 }
+
+func (d *DataBus) Delete(address int) {
+	delete(d.Data, address)
+}
