@@ -48,7 +48,7 @@ func getRequestForWriteOnMemory() gin.HandlerFunc {
 
 		// WriteOnAddress(byteAddress, byteData)
 		// WriteOnAddress(byteAddress, byteData)
-		c.JSON(http.StatusOK, gin.H{"message": "Data written successfully"})
+		c.JSON(http.StatusCreated, gin.H{"message": "Data written successfully"})
 	}
 }
 
@@ -70,8 +70,9 @@ func ReadFromBus() gin.HandlerFunc {
 		}
 
 		data := globalDataBus.Read(addr)
-
-		c.JSON(http.StatusOK, gin.H{"data": data})
+		str := string(data)
+		hexString := hex.EncodeToString([]byte(str))
+		c.JSON(http.StatusOK, gin.H{"data": hexString})
 	}
 }
 
