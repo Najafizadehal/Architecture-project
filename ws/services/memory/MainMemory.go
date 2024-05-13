@@ -3,25 +3,23 @@ package memory
 import "fmt"
 
 type Memory struct {
-	Storage map[string][]byte
+	Storage map[int][]byte
 }
 
 func NewMemory() *Memory {
 	return &Memory{
-		Storage: make(map[string][]byte, 4096),
+		Storage: make(map[int][]byte, 4096),
 	}
 }
 
-func (m *Memory) Store(address []byte, data []byte) {
-	addressKey := string(address)
-	m.Storage[addressKey] = data
+func (m *Memory) Store(address int, data []byte) {
+	m.Storage[address] = data
 }
 
-func (m *Memory) Load(address []byte) ([]byte, error) {
-	addressKey := string(address)
-	data, found := m.Storage[addressKey]
+func (m *Memory) Load(address int) ([]byte, error) {
+	data, found := m.Storage[address]
 	if !found {
-		return nil, fmt.Errorf("data not found at address : %s", addressKey)
+		return nil, fmt.Errorf("data not found at address : %s", address)
 	}
 	return data, nil
 }
