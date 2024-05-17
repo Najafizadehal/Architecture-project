@@ -2,6 +2,7 @@ package controlunit
 
 import (
 	"architecture/ws/services/alu"
+	"architecture/ws/services/bus"
 	"architecture/ws/services/memory"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ type ControlUnit struct {
 	Registers *memory.Registers
 	Memory    *memory.Memory
 	ALU       *alu.ALU
+	Bus       *bus.DataBus
 }
 type Memory struct {
 	Data map[int]int
@@ -22,21 +24,31 @@ func NewMemory() *Memory {
 	}
 }
 
-func NewControlUnit(registers *memory.Registers, memory *memory.Memory, alu *alu.ALU) *ControlUnit {
+func NewControlUnit(bus *bus.DataBus, registers *memory.Registers, memory *memory.Memory, alu *alu.ALU) *ControlUnit {
 	return &ControlUnit{
 		Registers: registers,
 		Memory:    memory,
 		ALU:       alu,
+		Bus:       bus,
 	}
 }
 
 func (cu *ControlUnit) Fetch() error {
-	instruction, err := cu.Memory.Read(cu.Registers.PC)
+	// Set address on bus
+	cu.Bus.SetAddress(cu.Registers.PC)
+	// Enable read signal on bus
+	cu.Bus.EnableRead()
+	// Perform read operation
+	err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 	if err != nil {
 		return err
 	}
-	cu.Registers.IR = instruction
+	// Store fetched instruction in IR
+	cu.Registers.IR = cu.Bus.Data
+	// Increment PC
 	cu.Registers.PC++
+	// Disable signals on bus
+	cu.Bus.DisableSignals()
 	return nil
 }
 
