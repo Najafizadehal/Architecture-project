@@ -121,7 +121,10 @@ func (cu *ControlUnit) Execute(opcode string, address int) error {
 }
 
 func (cu *ControlUnit) RunCycle() error {
-	cu.Fetch()
+	err := cu.Fetch()
+	if err != nil {
+		return err
+	}
 	opcode, address, err := cu.Decode()
 	if err != nil {
 		return err
