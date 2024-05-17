@@ -8,9 +8,9 @@ import (
 )
 
 type ControlUnit struct {
-	Register *memory.Registers
-	Memory   *Memory
-	ALU      *alu.ALU
+	Registers *memory.Registers
+	Memory    *memory.Memory
+	ALU       *alu.ALU
 }
 type Memory struct {
 	Data map[int]int
@@ -22,58 +22,98 @@ func NewMemory() *Memory {
 	}
 }
 
-func NewControlUnit(alu *alu.ALU, register *memory.Registers, memory *Memory) *ControlUnit {
+func NewControlUnit(registers *memory.Registers, memory *memory.Memory, alu *alu.ALU) *ControlUnit {
 	return &ControlUnit{
-		Register: register,
-		Memory:   memory,
-		ALU:      alu,
+		Registers: registers,
+		Memory:    memory,
+		ALU:       alu,
 	}
 }
 
-func (cu *ControlUnit) Fetch() {
-	cu.Register.IR = cu.Memory.Data[cu.Register.PC]
-	cu.Register.PC++
+func (cu *ControlUnit) Fetch() error {
+	instruction, err := cu.Memory.Read(cu.Registers.PC)
+	if err != nil {
+		return err
+	}
+	cu.Registers.IR = instruction
+	cu.Registers.PC++
+	return nil
 }
 
 func (cu *ControlUnit) Decode() (string, int, error) {
-	opcode := (cu.Register.IR & 0xF000) >> 12
-	address := cu.Register.IR & 0x0FFF
+	opcode := (cu.Registers.IR & 0xF000) >> 12
+	address := cu.Registers.IR & 0x0FFF
 	return fmt.Sprintf("%X", opcode), address, nil
 }
 
 func (cu *ControlUnit) Execute(opcode string, address int) error {
 	switch opcode {
 	case "1":
-		cu.Register.DR = cu.Memory.Data[address]
-		cu.Register.AC += cu.Register.DR
+		value, err := cu.Memory.Read(address)
+		if err != nil {
+			return err
+		}
+		cu.Registers.DR = value
+		cu.Registers.AC = cu.ALU.Add(cu.Registers.AC, cu.Registers.DR)
 	case "2":
-		cu.Register.DR = cu.Memory.Data[address]
-		cu.Register.AC -= cu.Register.DR
+		value, err := cu.Memory.Read(address)
+		if err != nil {
+			return err
+		}
+		cu.Registers.DR = value
+		cu.Registers.AC = cu.ALU.Subtract(cu.Registers.AC, cu.Registers.DR)
 	case "3":
-		cu.Register.AC = cu.Memory.Data[address]
+		value, err := cu.Memory.Read(address)
+		if err != nil {
+			return err
+		}
+		cu.Registers.AC = value
 	case "4":
-		cu.Memory.Data[address] = cu.Register.AC
+		return cu.Memory.Write(address, cu.Registers.AC)
 	case "5":
-		cu.Register.PC = address
+		cu.Registers.PC = address
 	case "6":
-		cu.Memory.Data[address] = cu.Register.PC
-		cu.Register.PC = address + 1
+		err := cu.Memory.Write(address, cu.Registers.PC)
+		if err != nil {
+			return err
+		}
+		cu.Registers.PC = address + 1
 	case "7":
-		cu.Memory.Data[address]++
-		if cu.Memory.Data[address] == 0 {
-			cu.Register.PC++
+		value, err := cu.Memory.Read(address)
+		if err != nil {
+			return err
+		}
+		value++
+		err = cu.Memory.Write(address, value)
+		if err != nil {
+			return err
+		}
+		if value == 0 {
+			cu.Registers.PC++
 		}
 	case "8":
-		cu.Register.DR = cu.Memory.Data[address]
-		cu.Register.AC = cu.ALU.And(cu.Register.AC, cu.Register.DR)
+		value, err := cu.Memory.Read(address)
+		if err != nil {
+			return err
+		}
+		cu.Registers.DR = value
+		cu.Registers.AC = cu.ALU.And(cu.Registers.AC, cu.Registers.DR)
 	case "9":
-		cu.Register.DR = cu.Memory.Data[address]
-		cu.Register.AC = cu.ALU.Or(cu.Register.AC, cu.Register.DR)
+		value, err := cu.Memory.Read(address)
+		if err != nil {
+			return err
+		}
+		cu.Registers.DR = value
+		cu.Registers.AC = cu.ALU.Or(cu.Registers.AC, cu.Registers.DR)
 	case "A":
-		cu.Register.DR = cu.Memory.Data[address]
-		cu.Register.AC = cu.ALU.Xor(cu.Register.AC, cu.Register.DR)
+		value, err := cu.Memory.Read(address)
+		if err != nil {
+			return err
+		}
+		cu.Registers.DR = value
+		cu.Registers.AC = cu.ALU.Xor(cu.Registers.AC, cu.Registers.DR)
 	case "B":
-		cu.Register.AC = cu.ALU.Not(cu.Register.AC)
+		cu.Registers.AC = cu.ALU.Not(cu.Registers.AC)
 	default:
 		return errors.New("unsupported opcode: " + opcode)
 	}
