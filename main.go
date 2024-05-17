@@ -33,6 +33,7 @@ func main() {
 	r.POST("/load_instructions", controller.LoadInstructions)
 	r.POST("/write/register", controller.WriteRegister)
 	r.GET("/memory/read/:address", controller.ReadMemory)
+	r.GET("/register/read", controller.ReadRegister)
 
 	// Run the server
 	if err := r.Run(":8080"); err != nil {

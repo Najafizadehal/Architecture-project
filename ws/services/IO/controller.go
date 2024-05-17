@@ -150,3 +150,32 @@ func (ctr *Controller) ReadMemory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"address": address, "value": value})
 }
+
+func (ctr *Controller) ReadRegister(c *gin.Context) {
+	register := c.Query("register")
+
+	var value int
+	switch register {
+	case "AR":
+		value = ctr.ControlUnit.Registers.AR
+	case "PC":
+		value = ctr.ControlUnit.Registers.PC
+	case "DR":
+		value = ctr.ControlUnit.Registers.DR
+	case "AC":
+		value = ctr.ControlUnit.Registers.AC
+	case "IR":
+		value = ctr.ControlUnit.Registers.IR
+	case "TR":
+		value = ctr.ControlUnit.Registers.TR
+	case "INPR":
+		value = ctr.ControlUnit.Registers.INPR
+	case "OUTR":
+		value = ctr.ControlUnit.Registers.OUTR
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid register"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"register": register, "value": value})
+}
