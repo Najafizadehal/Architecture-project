@@ -1,6 +1,7 @@
 package controlunit
 
 import (
+	"architecture/ws/services/alu"
 	"architecture/ws/services/memory"
 	"errors"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 type ControlUnit struct {
 	Register *memory.Registers
 	Memory   *Memory
+	ALU      *alu.ALU
 }
 type Memory struct {
 	Data map[int]int
@@ -20,10 +22,11 @@ func NewMemory() *Memory {
 	}
 }
 
-func NewControlUnit(register *memory.Registers, memory *Memory) *ControlUnit {
+func NewControlUnit(alu *alu.ALU, register *memory.Registers, memory *Memory) *ControlUnit {
 	return &ControlUnit{
 		Register: register,
 		Memory:   memory,
+		ALU:      alu,
 	}
 }
 
@@ -60,6 +63,17 @@ func (cu *ControlUnit) Execute(opcode string, address int) error {
 		if cu.Memory.Data[address] == 0 {
 			cu.Register.PC++
 		}
+	case "8":
+		cu.Register.DR = cu.Memory.Data[address]
+		cu.Register.AC = cu.ALU.And(cu.Register.AC, cu.Register.DR)
+	case "9":
+		cu.Register.DR = cu.Memory.Data[address]
+		cu.Register.AC = cu.ALU.Or(cu.Register.AC, cu.Register.DR)
+	case "A":
+		cu.Register.DR = cu.Memory.Data[address]
+		cu.Register.AC = cu.ALU.Xor(cu.Register.AC, cu.Register.DR)
+	case "B":
+		cu.Register.AC = cu.ALU.Not(cu.Register.AC)
 	default:
 		return errors.New("unsupported opcode: " + opcode)
 	}
