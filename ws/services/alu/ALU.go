@@ -1,5 +1,43 @@
 package alu
 
+// ALU represents the Arithmetic Logic Unit of the machine.
+type ALU struct{}
+
+// NewALU creates a new ALU.
+func NewALU() *ALU {
+	return &ALU{}
+}
+
+// Add performs addition on two integers.
+func (alu *ALU) Add(a, b int) int {
+	return a + b
+}
+
+// Subtract performs subtraction on two integers.
+func (alu *ALU) Subtract(a, b int) int {
+	return a - b
+}
+
+// And performs a bitwise AND operation on two integers.
+func (alu *ALU) And(a, b int) int {
+	return a & b
+}
+
+// Or performs a bitwise OR operation on two integers.
+func (alu *ALU) Or(a, b int) int {
+	return a | b
+}
+
+// Not performs a bitwise NOT operation on an integer.
+func (alu *ALU) Not(a int) int {
+	return ^a
+}
+
+// Xor performs a bitwise XOR operation on two integers.
+func (alu *ALU) Xor(a, b int) int {
+	return a ^ b
+}
+
 // import (
 // 	"architecture/ws/services/bus"
 // 	"architecture/ws/services/memory"
