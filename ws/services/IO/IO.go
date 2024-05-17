@@ -1,4 +1,4 @@
-package io
+package controllers
 
 // import (
 // 	"architecture/ws/services/memory"

@@ -1,4 +1,4 @@
-package io
+package controllers
 
 // func BulkWriteInMemoryRoutes(incommingRoutes *gin.Engine) {
 // 	incommingRoutes.POST("/memory/write", memory.GetRequestForWriteOnMemory())
