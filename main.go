@@ -31,6 +31,7 @@ func main() {
 	r.GET("/run_cycle", controller.RunCycle)
 	r.POST("/load_instruction", controller.LoadInstruction)
 	r.POST("/load_instructions", controller.LoadInstructions)
+	r.POST("/write_register", controller.WriteRegister)
 
 	// Run the server
 	if err := r.Run(":8080"); err != nil {

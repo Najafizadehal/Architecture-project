@@ -99,3 +99,38 @@ func (ctr *Controller) LoadInstructions(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Instructions loaded successfully"})
 }
+
+func (ctr *Controller) WriteRegister(c *gin.Context) {
+	var req struct {
+		Register string `json:"register"`
+		Value    int    `json:"value"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	switch req.Register {
+	case "AR":
+		ctr.ControlUnit.Registers.AR = req.Value
+	case "PC":
+		ctr.ControlUnit.Registers.PC = req.Value
+	case "DR":
+		ctr.ControlUnit.Registers.DR = req.Value
+	case "AC":
+		ctr.ControlUnit.Registers.AC = req.Value
+	case "IR":
+		ctr.ControlUnit.Registers.IR = req.Value
+	case "TR":
+		ctr.ControlUnit.Registers.TR = req.Value
+	case "INPR":
+		ctr.ControlUnit.Registers.INPR = req.Value
+	case "OUTR":
+		ctr.ControlUnit.Registers.OUTR = req.Value
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid register"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Register updated successfully"})
+}
