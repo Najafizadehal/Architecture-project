@@ -34,20 +34,14 @@ func NewControlUnit(bus *bus.DataBus, registers *memory.Registers, memory *memor
 }
 
 func (cu *ControlUnit) Fetch() error {
-	// Set address on bus
 	cu.Bus.SetAddress(cu.Registers.PC)
-	// Enable read signal on bus
 	cu.Bus.EnableRead()
-	// Perform read operation
 	err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 	if err != nil {
 		return err
 	}
-	// Store fetched instruction in IR
 	cu.Registers.IR = cu.Bus.Data
-	// Increment PC
 	cu.Registers.PC++
-	// Disable signals on bus
 	cu.Bus.DisableSignals()
 	return nil
 }
@@ -60,75 +54,148 @@ func (cu *ControlUnit) Decode() (string, int, error) {
 
 func (cu *ControlUnit) Execute(opcode string, address int) error {
 	switch opcode {
-	case "1":
-		value, err := cu.Memory.Read(address)
+	case "1": // ADD
+		// Set address on bus
+		cu.Bus.SetAddress(address)
+		// Enable read signal on bus
+		cu.Bus.EnableRead()
+		// Perform read operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		cu.Registers.DR = value
+		// Store read data in DR
+		cu.Registers.DR = cu.Bus.Data
+		// Perform addition using ALU
 		cu.Registers.AC = cu.ALU.Add(cu.Registers.AC, cu.Registers.DR)
-	case "2":
-		value, err := cu.Memory.Read(address)
+	case "2": // SUB
+		// Set address on bus
+		cu.Bus.SetAddress(address)
+		// Enable read signal on bus
+		cu.Bus.EnableRead()
+		// Perform read operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		cu.Registers.DR = value
+		// Store read data in DR
+		cu.Registers.DR = cu.Bus.Data
+		// Perform subtraction using ALU
 		cu.Registers.AC = cu.ALU.Subtract(cu.Registers.AC, cu.Registers.DR)
-	case "3":
-		value, err := cu.Memory.Read(address)
+	case "3": // LDA
+		// Set address on bus
+		cu.Bus.SetAddress(address)
+		// Enable read signal on bus
+		cu.Bus.EnableRead()
+		// Perform read operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		cu.Registers.AC = value
-	case "4":
-		return cu.Memory.Write(address, cu.Registers.AC)
-	case "5":
+		// Load data into AC
+		cu.Registers.AC = cu.Bus.Data
+	case "4": // STA
+		// Set address and data on bus
+		cu.Bus.SetAddress(address)
+		cu.Bus.SetData(cu.Registers.AC)
+		// Enable write signal on bus
+		cu.Bus.EnableWrite()
+		// Perform write operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
+		if err != nil {
+			return err
+		}
+	case "5": // BUN (Branch Unconditionally)
 		cu.Registers.PC = address
-	case "6":
-		err := cu.Memory.Write(address, cu.Registers.PC)
+	case "6": // BSA (Branch and Save Return Address)
+		// Set address and data on bus
+		cu.Bus.SetAddress(address)
+		cu.Bus.SetData(cu.Registers.PC)
+		// Enable write signal on bus
+		cu.Bus.EnableWrite()
+		// Perform write operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
+		// Set PC to address + 1
 		cu.Registers.PC = address + 1
-	case "7":
-		value, err := cu.Memory.Read(address)
+	case "7": // ISZ (Increment and Skip if Zero)
+		// Set address on bus
+		cu.Bus.SetAddress(address)
+		// Enable read signal on bus
+		cu.Bus.EnableRead()
+		// Perform read operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		value++
-		err = cu.Memory.Write(address, value)
+		// Increment read value
+		cu.Bus.Data++
+		// Set address and data on bus
+		cu.Bus.SetAddress(address)
+		cu.Bus.SetData(cu.Bus.Data)
+		// Enable write signal on bus
+		cu.Bus.EnableWrite()
+		// Perform write operation
+		err = cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		if value == 0 {
+		// Skip next instruction if zero
+		if cu.Bus.Data == 0 {
 			cu.Registers.PC++
 		}
-	case "8":
-		value, err := cu.Memory.Read(address)
+	case "8": // AND
+		// Set address on bus
+		cu.Bus.SetAddress(address)
+		// Enable read signal on bus
+		cu.Bus.EnableRead()
+		// Perform read operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		cu.Registers.DR = value
+		// Store read data in DR
+		cu.Registers.DR = cu.Bus.Data
+		// Perform AND operation using ALU
 		cu.Registers.AC = cu.ALU.And(cu.Registers.AC, cu.Registers.DR)
-	case "9":
-		value, err := cu.Memory.Read(address)
+	case "9": // OR
+		// Set address on bus
+		cu.Bus.SetAddress(address)
+		// Enable read signal on bus
+		cu.Bus.EnableRead()
+		// Perform read operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		cu.Registers.DR = value
+		// Store read data in DR
+		cu.Registers.DR = cu.Bus.Data
+		// Perform OR operation using ALU
 		cu.Registers.AC = cu.ALU.Or(cu.Registers.AC, cu.Registers.DR)
-	case "A":
-		value, err := cu.Memory.Read(address)
+	case "A": // XOR
+		// Set address on bus
+		cu.Bus.SetAddress(address)
+		// Enable read signal on bus
+		cu.Bus.EnableRead()
+		// Perform read operation
+		err := cu.Bus.PerformOperation(cu.Memory, cu.Registers)
 		if err != nil {
 			return err
 		}
-		cu.Registers.DR = value
+		// Store read data in DR
+		cu.Registers.DR = cu.Bus.Data
+		// Perform XOR operation using ALU
 		cu.Registers.AC = cu.ALU.Xor(cu.Registers.AC, cu.Registers.DR)
-	case "B":
+	case "B": // NOT
+		// Perform NOT operation using ALU
 		cu.Registers.AC = cu.ALU.Not(cu.Registers.AC)
 	default:
 		return errors.New("unsupported opcode: " + opcode)
 	}
+	// Disable signals on bus
+	cu.Bus.DisableSignals()
 	return nil
 }
 
