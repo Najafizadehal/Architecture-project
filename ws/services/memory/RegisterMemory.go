@@ -1,50 +1,67 @@
 package memory
 
+import "errors"
+
 type Registers struct {
-	PC     int
-	ACC    byte
-	IR     byte
-	MAR    int
-	MBR    byte
-	Status byte
+	AR   int // Address Register
+	PC   int // Program Counter
+	DR   int // Data Register
+	AC   int // Accumulator
+	IR   int // Instruction Register
+	TR   int // Temporary Register
+	INPR int // Input Register
+	OUTR int // Output Register
 }
 
 func NewRegister() *Registers {
 	return &Registers{}
 }
 
-func (r *Registers) Read(reg int) byte {
-	switch reg {
-	case 0:
-		return byte(r.PC)
-	case 1:
-		return r.ACC
-	case 2:
-		return r.IR
-	case 3:
-		return byte(r.MAR)
-	case 4:
-		return r.MBR
-	case 5:
-		return r.Status
+func (r *Registers) Set(register string, value int) error {
+	switch register {
+	case "AR":
+		r.AR = value
+	case "PC":
+		r.PC = value
+	case "DR":
+		r.DR = value
+	case "AC":
+		r.AC = value
+	case "IR":
+		r.IR = value
+	case "TR":
+		r.TR = value
+	case "INPR":
+		r.INPR = value
+	case "OUTR":
+		r.OUTR = value
 	default:
-		return 0
+		return errors.New("invalid register")
 	}
+
+	return nil
 }
 
-func (r *Registers) Write(reg int, value byte) {
-	switch reg {
-	case 0:
-		r.PC = int(value)
-	case 1:
-		r.ACC = value
-	case 2:
-		r.IR = value
-	case 3:
-		r.MAR = int(value)
-	case 4:
-		r.MBR = value
-	case 5:
-		r.Status = value
+func (r *Registers) Get(register string) (int, error) {
+
+	switch register {
+	case "AR":
+		return r.AR, nil
+	case "PC":
+		return r.PC, nil
+	case "DR":
+		return r.DR, nil
+	case "AC":
+		return r.AC, nil
+	case "IR":
+		return r.IR, nil
+	case "TR":
+		return r.TR, nil
+	case "INPR":
+		return r.INPR, nil
+	case "OUTR":
+		return r.OUTR, nil
+	default:
+		return 0, errors.New("invalid register")
 	}
 }
