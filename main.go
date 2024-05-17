@@ -18,7 +18,6 @@ func main() {
 	alu := alu.NewALU()
 	dataBus := bus.NewDataBus()
 
-	// Initialize control unit
 	controlUnit := controlunit.NewControlUnit(dataBus, registers, memory, alu)
 
 	// Initialize Gin router
