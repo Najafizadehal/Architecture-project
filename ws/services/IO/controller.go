@@ -134,3 +134,19 @@ func (ctr *Controller) WriteRegister(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Register updated successfully"})
 }
+func (ctr *Controller) ReadMemory(c *gin.Context) {
+	addressStr := c.Param("address")
+	address, err := strconv.Atoi(addressStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid address"})
+		return
+	}
+
+	value, err := ctr.ControlUnit.Memory.Read(address)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"address": address, "value": value})
+}
