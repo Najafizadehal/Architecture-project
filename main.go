@@ -33,6 +33,7 @@ func main() {
 	r.POST("/load_instructions", controller.LoadInstructions)
 	r.POST("/write/register", controller.WriteRegister)
 	r.GET("/memory/read/:address", controller.ReadMemory)
+	// curl -X GET "http://localhost:8080/register/read?register=AC"
 	r.GET("/register/read", controller.ReadRegister)
 
 	// Run the server
