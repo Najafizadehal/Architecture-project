@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"architecture/ws/services/controlunit"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -96,8 +97,9 @@ func (ctr *Controller) LoadInstruction(c *gin.Context) {
 
 func (ctr *Controller) LoadInstructions(c *gin.Context) {
 	var instructions []struct {
-		Address string `json:"address"` 
-		Value   string `json:"value"`  
+		Address string `json:"address"`
+		Value   string `json:"value"`
+	}
 	if err := c.BindJSON(&instructions); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -171,7 +173,6 @@ func (ctr *Controller) ReadMemory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"address": fmt.Sprintf("%X", address), "value": fmt.Sprintf("%X", value)})
 }
-
 
 func (ctr *Controller) ReadRegister(c *gin.Context) {
 	register := c.Query("register")
