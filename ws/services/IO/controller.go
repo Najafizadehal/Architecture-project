@@ -157,20 +157,21 @@ func (ctr *Controller) WriteRegister(c *gin.Context) {
 }
 func (ctr *Controller) ReadMemory(c *gin.Context) {
 	addressStr := c.Param("address")
-	address, err := strconv.Atoi(addressStr)
+	address, err := strconv.ParseInt(addressStr, 16, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid address"})
 		return
 	}
 
-	value, err := ctr.ControlUnit.Memory.Read(address)
+	value, err := ctr.ControlUnit.Memory.Read(int(address))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"address": address, "value": value})
+	c.JSON(http.StatusOK, gin.H{"address": fmt.Sprintf("%X", address), "value": fmt.Sprintf("%X", value)})
 }
+
 
 func (ctr *Controller) ReadRegister(c *gin.Context) {
 	register := c.Query("register")
