@@ -68,14 +68,26 @@ func (ctr *Controller) RunCycle(c *gin.Context) {
 
 func (ctr *Controller) LoadInstruction(c *gin.Context) {
 	var instruction struct {
-		Address int `json:"address"`
-		Value   int `json:"value"`
+		Address string `json:"address"`
+		Value   string `json:"value"`
 	}
 	if err := c.BindJSON(&instruction); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := ctr.ControlUnit.Memory.Write(instruction.Address, instruction.Value); err != nil {
+
+	address, err := strconv.ParseInt(instruction.Address, 16, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid address"})
+		return
+	}
+	value, err := strconv.ParseInt(instruction.Value, 16, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid value"})
+		return
+	}
+
+	if err := ctr.ControlUnit.Memory.Write(int(address), int(value)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
