@@ -45,7 +45,6 @@ func (cu *ControlUnit) Fetch() error {
 	cu.Bus.DisableSignals()
 	return nil
 }
-
 func (cu *ControlUnit) Decode() (string, int, error) {
 	opcode := (cu.Registers.IR & 0xF000) >> 12
 	address := cu.Registers.IR & 0x0FFF
