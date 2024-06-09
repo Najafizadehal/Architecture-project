@@ -76,7 +76,6 @@ func (ctr *Controller) LoadInstruction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	address, err := strconv.ParseInt(instruction.Address, 16, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid address"})
