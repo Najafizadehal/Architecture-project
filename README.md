@@ -1,4 +1,3 @@
-البته! در ادامه، یک فایل README برای توضیح پیاده‌سازی شما به انگلیسی آورده شده است.
 
 ```markdown
 # Von Neumann Machine Simulator
