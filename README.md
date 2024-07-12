@@ -1,5 +1,4 @@
 
-```markdown
 # Von Neumann Machine Simulator
 
 This project simulates a Von Neumann machine architecture using Go and the Gin framework. It provides an API to load instructions, execute them, and interact with the memory and registers.
